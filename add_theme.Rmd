@@ -1,0 +1,68 @@
+---
+title: "Add theme"
+author: "AMSE"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    social: menu
+    source_code: embed
+    theme : united
+---
+
+```{r setup, include=FALSE}
+library(readxl)
+data = read_excel("/Users/flav/Documents/Cours/BigData2_BDSE/data/btc.xlsx")
+data$Close = as.numeric(gsub(",","",data$Close))
+data$Date = as.Date(data$Date, format = "%m/%d/%Y")
+```
+
+Home page
+=======================================================================
+
+Row {data-height=400}
+-----------------------------------------------------------------------
+
+### Probability of increase
+
+```{r}
+gauge(80, min = 0, max = 100, symbol = '%', gaugeSectors(
+  success = c(80, 100), warning = c(40, 79), danger = c(0, 39)
+))
+```
+
+
+### Current price
+
+```{r}
+valueBox(data[1,"Close"], icon = "fa-comments", caption = "Current price")
+```
+
+Row {data-height=600}
+-----------------------------------------------------------------------
+
+### Graph static
+
+```{r}
+p <- ggplot(data, aes(x=Date, y=Close, group = 1)) +
+  geom_line() + 
+  xlab("Days") +
+  ylab("Price")
+p
+```
+
+### Graph dynamic
+```{r}
+p <- ggplot(data, aes(x=Date, y=Close, group = 1)) +
+  geom_line() + 
+  xlab("Days") +
+  ylab("Price")
+ggplotly(p)
+```
+
+### Last 14 days
+```{r}
+DT::datatable(data[c(nrow(data) - 14 :nrow(data)),])
+```
+
+More details
+=======================================================================
